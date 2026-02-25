@@ -38,11 +38,15 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">CPF / CNPJ</label>
                             <input type="text" wire:model="cpf_cnpj"
+                                   x-on:input="$event.target.value = maskCpfCnpj($event.target.value)"
+                                   placeholder="000.000.000-00"
                                    class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Telefone</label>
                             <input type="text" wire:model="phone"
+                                   x-on:input="$event.target.value = maskPhone($event.target.value)"
+                                   placeholder="(00) 00000-0000"
                                    class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>

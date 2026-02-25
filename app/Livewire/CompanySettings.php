@@ -40,7 +40,9 @@ class CompanySettings extends Component
 
     public array $services = [];
 
-    public string $newService = '';
+    public string $newServiceName = '';
+
+    public string $newServicePrice = '';
 
     protected function rules(): array
     {
@@ -77,15 +79,24 @@ class CompanySettings extends Component
             $this->city = $this->company->city ?? '';
             $this->state = $this->company->state ?? '';
             $this->zip_code = $this->company->zip_code ?? '';
-            $this->services = $this->company->services->pluck('name')->toArray();
+            $this->services = $this->company->services->map(fn ($s) => [
+                    'name'       => $s->name,
+                    'unit_price' => $s->unit_price ? number_format((float) $s->unit_price, 2, ',', '.') : '',
+                ])->toArray();
         }
     }
 
     public function addService(): void
     {
-        if (trim($this->newService)) {
-            $this->services[] = trim($this->newService);
-            $this->newService = '';
+        if (trim($this->newServiceName)) {
+            $price = preg_replace('/[^\d,]/', '', $this->newServicePrice);
+            $price = str_replace(',', '.', $price);
+            $this->services[] = [
+                'name'       => trim($this->newServiceName),
+                'unit_price' => is_numeric($price) ? $price : '',
+            ];
+            $this->newServiceName = '';
+            $this->newServicePrice = '';
         }
     }
 
@@ -123,8 +134,15 @@ class CompanySettings extends Component
 
         // Sync services
         $this->company->services()->delete();
-        foreach ($this->services as $serviceName) {
-            $this->company->services()->create(['name' => $serviceName]);
+        foreach ($this->services as $serviceItem) {
+            $name = is_array($serviceItem) ? $serviceItem['name'] : $serviceItem;
+            $price = is_array($serviceItem) && !empty($serviceItem['unit_price'])
+                ? str_replace(',', '.', preg_replace('/[^\d,]/', '', $serviceItem['unit_price']))
+                : null;
+            $this->company->services()->create([
+                'name'       => $name,
+                'unit_price' => is_numeric($price) ? (float) $price : null,
+            ]);
         }
 
         session()->flash('success', 'Configurações salvas com sucesso!');

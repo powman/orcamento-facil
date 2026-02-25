@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Budget;
 use App\Models\BudgetItem;
 use App\Models\Client;
+use App\Models\CompanyService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -111,6 +112,21 @@ class BudgetForm extends Component
         }
         $this->showClientSuggestions = false;
         $this->clientSuggestions = [];
+    }
+
+    public function addItemFromCatalog(int $serviceId): void
+    {
+        $service = CompanyService::find($serviceId);
+        if ($service) {
+            $this->items[] = [
+                'id'          => null,
+                'description' => $service->name,
+                'quantity'    => '1,000',
+                'unit_price'  => $service->unit_price
+                    ? number_format((float) $service->unit_price, 2, ',', '.')
+                    : '0,00',
+            ];
+        }
     }
 
     public function addItem(): void
@@ -255,6 +271,9 @@ class BudgetForm extends Component
 
     public function render()
     {
-        return view('livewire.budget-form');
+        $companyCatalog = CompanyService::orderBy('name')
+            ->get(['id', 'name', 'unit_price']);
+
+        return view('livewire.budget-form', compact('companyCatalog'));
     }
 }

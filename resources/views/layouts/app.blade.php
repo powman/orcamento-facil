@@ -82,6 +82,10 @@
                             <div class="text-xs text-slate-400 truncate">{{ auth()->user()->email }}</div>
                         </div>
                     </div>
+                    <a href="{{ route('profile.edit') }}"
+                       class="block text-xs text-slate-400 hover:text-white transition-colors py-1 {{ request()->routeIs('profile.*') ? 'text-white' : '' }}">
+                        Meu Perfil
+                    </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="w-full text-left text-xs text-slate-400 hover:text-white transition-colors py-1">

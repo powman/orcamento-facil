@@ -57,6 +57,8 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">CPF / CNPJ</label>
                         <input type="text" wire:model="client_cpf_cnpj"
+                               x-on:input="$event.target.value = maskCpfCnpj($event.target.value)"
+                               placeholder="000.000.000-00"
                                class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
@@ -137,13 +139,33 @@
                     </table>
                 </div>
 
-                <button type="button" wire:click="addItem"
-                        class="mt-4 flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Adicionar Item
-                </button>
+                <div class="mt-4 flex items-center gap-3 flex-wrap">
+                    <button type="button" wire:click="addItem"
+                            class="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Adicionar Item
+                    </button>
+
+                    @if($companyCatalog->isNotEmpty())
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-400">ou selecionar do catálogo:</span>
+                            <select x-data onchange="if(this.value) { $wire.addItemFromCatalog(this.value); this.value = ''; }"
+                                    class="border border-slate-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">— Catálogo —</option>
+                                @foreach($companyCatalog as $catalogItem)
+                                    <option value="{{ $catalogItem->id }}">
+                                        {{ $catalogItem->name }}
+                                        @if($catalogItem->unit_price)
+                                            — R$ {{ number_format((float)$catalogItem->unit_price, 2, ',', '.') }}
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                </div>
             </div>
 
             <!-- Notes -->

@@ -32,18 +32,24 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">CNPJ</label>
                         <input type="text" wire:model="cnpj"
+                               x-on:input="$event.target.value = maskCnpj($event.target.value)"
+                               placeholder="00.000.000/0000-00"
                                class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Telefone 1</label>
                         <input type="text" wire:model="phone1"
+                               x-on:input="$event.target.value = maskPhone($event.target.value)"
+                               placeholder="(00) 00000-0000"
                                class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Telefone 2</label>
                         <input type="text" wire:model="phone2"
+                               x-on:input="$event.target.value = maskPhone($event.target.value)"
+                               placeholder="(00) 00000-0000"
                                class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
@@ -82,6 +88,8 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">CEP</label>
                         <input type="text" wire:model="zip_code"
+                               x-on:input="$event.target.value = maskCep($event.target.value)"
+                               placeholder="00000-000"
                                class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
@@ -121,15 +129,20 @@
 
             <!-- Services -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-                <h3 class="font-semibold text-slate-800 mb-4">Serviços Oferecidos</h3>
-                <p class="text-xs text-slate-500 mb-3">Estes serviços aparecem no cabeçalho dos orçamentos impressos.</p>
+                <h3 class="font-semibold text-slate-800 mb-4">Serviços / Produtos</h3>
+                <p class="text-xs text-slate-500 mb-3">Estes itens aparecem no cabeçalho dos orçamentos e podem ser selecionados ao criar itens.</p>
 
                 <div class="space-y-2 mb-4">
                     @foreach($services as $index => $service)
                         <div class="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
-                            <span class="flex-1 text-sm text-slate-700">{{ $service }}</span>
+                            <div class="flex-1 min-w-0">
+                                <span class="block text-sm text-slate-700 truncate">{{ $service['name'] }}</span>
+                                @if(!empty($service['unit_price']))
+                                    <span class="text-xs text-slate-500">R$ {{ number_format((float)$service['unit_price'], 2, ',', '.') }}</span>
+                                @endif
+                            </div>
                             <button type="button" wire:click="removeService({{ $index }})"
-                                    class="text-red-400 hover:text-red-600 transition-colors">
+                                    class="text-red-400 hover:text-red-600 transition-colors flex-shrink-0">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
@@ -138,14 +151,23 @@
                     @endforeach
                 </div>
 
-                <div class="flex gap-2">
-                    <input type="text" wire:model="newService" wire:keydown.enter.prevent="addService"
-                           placeholder="Novo serviço..."
-                           class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button type="button" wire:click="addService"
-                            class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-lg text-sm transition-colors">
-                        +
-                    </button>
+                <div class="space-y-2">
+                    <input type="text" wire:model="newServiceName"
+                           placeholder="Nome do serviço/produto..."
+                           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">R$</span>
+                            <input type="text" wire:model="newServicePrice"
+                                   x-on:input="$event.target.value = maskCurrency($event.target.value)"
+                                   placeholder="0,00"
+                                   class="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-sm text-right focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="button" wire:click="addService"
+                                class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded-lg text-sm transition-colors">
+                            +
+                        </button>
+                    </div>
                 </div>
             </div>
 

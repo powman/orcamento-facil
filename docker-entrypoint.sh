@@ -16,7 +16,6 @@ echo "Database is ready."
 
 # Run migrations
 php artisan migrate --force
-php artisan db:seed --force
 
 # Cache config and routes in production
 if [ "$APP_ENV" = "production" ]; then

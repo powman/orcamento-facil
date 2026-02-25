@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CompanyService extends Model
 {
-    protected $fillable = ['company_id', 'name'];
+    protected $fillable = ['company_id', 'name', 'unit_price'];
 
     protected static function booted(): void
     {
